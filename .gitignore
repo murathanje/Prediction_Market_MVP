@@ -1,0 +1,51 @@
+# Contracts
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+contracts/.env
+
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Misc
+.env
+.env.local
+.env.production
+.vercel
+
+# Test coverage
+coverage/
+lcov.info
+
+# Setup and planning files (not needed in git)
+SETUP_COMPLETE.md
+TODO.md
+
+# Documentation drafts
+docs/drafts/
+
