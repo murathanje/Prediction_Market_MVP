@@ -1,11 +1,25 @@
 'use client'
 
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { useEffect, useState } from 'react'
 
 export function ConnectWallet() {
   const { address, isConnected } = useAccount()
   const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <div className="px-6 py-3 bg-gray-200 text-gray-500 rounded-lg">
+        Loading...
+      </div>
+    )
+  }
 
   if (isConnected && address) {
     return (

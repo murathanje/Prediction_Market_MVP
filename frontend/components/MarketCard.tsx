@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { parseEther, formatEther } from 'viem'
 import { CONTRACTS } from '@/lib/wagmi'
@@ -15,6 +15,11 @@ export function MarketCard({ marketAddress }: MarketCardProps) {
   const { address, isConnected } = useAccount()
   const [betAmount, setBetAmount] = useState('')
   const [selectedOutcome, setSelectedOutcome] = useState<'yes' | 'no'>('yes')
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const { data: marketInfo } = useReadContract({
     address: marketAddress,
@@ -48,6 +53,10 @@ export function MarketCard({ marketAddress }: MarketCardProps) {
 
   const { isLoading: isApproving } = useWaitForTransactionReceipt({ hash: approveHash })
   const { isLoading: isBuying } = useWaitForTransactionReceipt({ hash: buyHash })
+
+  if (!mounted) {
+    return <div className="text-center py-8">Loading market...</div>
+  }
 
   if (!marketInfo) {
     return <div className="text-center py-8">Loading market...</div>
