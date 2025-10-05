@@ -1,0 +1,29 @@
+{
+  "anvil_local": {
+    "chainId": 31337,
+    "rpcUrl": "http://127.0.0.1:8545",
+    "contracts": {
+      "SettlementToken": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "MarketFactory": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      "TestMarket": "0xCafac3dD18aC6c6e92c921884f9E4176737C052c"
+    },
+    "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    "deployedAt": "2025-10-05"
+  },
+  "base_sepolia": {
+    "chainId": 84532,
+    "rpcUrl": "https://sepolia.base.org",
+    "contracts": {
+      "SettlementToken": "",
+      "MarketFactory": ""
+    }
+  },
+  "arbitrum_sepolia": {
+    "chainId": 421614,
+    "rpcUrl": "https://sepolia-rollup.arbitrum.io/rpc",
+    "contracts": {
+      "SettlementToken": "",
+      "MarketFactory": ""
+    }
+  }
+}
