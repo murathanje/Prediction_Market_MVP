@@ -116,7 +116,7 @@ export function MarketCard({ marketAddress }: MarketCardProps) {
       {userPosition && (
         <div className="bg-blue-50 rounded-lg p-4 mb-6">
           <div className="text-sm font-semibold text-blue-900 mb-2">Your Position</div>
-          <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="grid grid-cols-2 gap-4 text-sm text-gray-900 font-medium">
             <div>YES: {formatEther(userPosition[0] || 0n)} shares</div>
             <div>NO: {formatEther(userPosition[1] || 0n)} shares</div>
           </div>
@@ -155,7 +155,7 @@ export function MarketCard({ marketAddress }: MarketCardProps) {
             placeholder="Amount in PMT"
             step="0.01"
             min="0.001"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 font-medium"
           />
 
           <div className="flex gap-2">
