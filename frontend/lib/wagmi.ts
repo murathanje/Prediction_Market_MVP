@@ -1,6 +1,7 @@
 import { http, createConfig } from 'wagmi'
-import { localhost } from 'wagmi/chains'
+import { sepolia } from 'wagmi/chains'
 import { injected } from 'wagmi/connectors'
+import deployments from './deployments.json'
 
 export const anvilLocal = {
   id: 31337,
@@ -13,15 +14,47 @@ export const anvilLocal = {
 } as const
 
 export const config = createConfig({
-  chains: [anvilLocal as any],
+  chains: [anvilLocal, sepolia],
   connectors: [injected()],
   transports: {
     [anvilLocal.id]: http(),
+    [sepolia.id]: http(),
   },
 })
 
-export const CONTRACTS = {
-  SettlementToken: process.env.NEXT_PUBLIC_SETTLEMENT_TOKEN_ADDRESS as `0x${string}`,
-  MarketFactory: process.env.NEXT_PUBLIC_MARKET_FACTORY_ADDRESS as `0x${string}`,
-  TestMarket: process.env.NEXT_PUBLIC_TEST_MARKET_ADDRESS as `0x${string}`,
+// Get contract addresses based on the connected chain ID
+export function getContractAddresses(chainId: number | undefined) {
+  // Default to local if no chain connected
+  if (!chainId) {
+    return {
+      SettlementToken: deployments.local.settlementToken as `0x${string}`,
+      MarketFactory: deployments.local.marketFactory as `0x${string}`,
+      TestMarket: (deployments.local.testMarket || '0x0000000000000000000000000000000000000000') as `0x${string}`,
+    }
+  }
+
+  // Sepolia
+  if (chainId === 11155111) {
+    return {
+      SettlementToken: deployments.sepolia.settlementToken as `0x${string}`,
+      MarketFactory: deployments.sepolia.marketFactory as `0x${string}`,
+      TestMarket: (deployments.sepolia.testMarket || '0x0000000000000000000000000000000000000000') as `0x${string}`,
+    }
+  }
+
+  // Anvil Local
+  if (chainId === 31337) {
+    return {
+      SettlementToken: deployments.local.settlementToken as `0x${string}`,
+      MarketFactory: deployments.local.marketFactory as `0x${string}`,
+      TestMarket: (deployments.local.testMarket || '0x0000000000000000000000000000000000000000') as `0x${string}`,
+    }
+  }
+
+  // Default fallback to local
+  return {
+    SettlementToken: deployments.local.settlementToken as `0x${string}`,
+    MarketFactory: deployments.local.marketFactory as `0x${string}`,
+    TestMarket: (deployments.local.testMarket || '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  }
 }

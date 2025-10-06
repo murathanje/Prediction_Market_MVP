@@ -1,12 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useReadContract } from 'wagmi'
-import { CONTRACTS } from '@/lib/wagmi'
+import { useReadContract, useChainId } from 'wagmi'
+import { getContractAddresses } from '@/lib/wagmi'
 import MarketFactoryABI from '@/lib/abi/MarketFactory.json'
 import { MarketCard } from './MarketCard'
 
 export function MarketList() {
+  const chainId = useChainId()
+  const CONTRACTS = getContractAddresses(chainId)
+  
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {

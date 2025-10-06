@@ -2,13 +2,23 @@
 
 A full-stack decentralized prediction market platform built on EVM-compatible blockchains, allowing users to create, bet on, and resolve real-world event outcomes.
 
+## 🌐 Live Deployment
+
+**Ethereum Sepolia Testnet** (Verified ✅)
+
+- **SettlementToken (PMT):** [`0x9587900CdA35308bfC14ea41Ccd0C1947b159Ecb`](https://sepolia.etherscan.io/address/0x9587900cda35308bfc14ea41ccd0c1947b159ecb)
+- **MarketFactory:** [`0xDe2b5b73af47Ba81d8AeF7FBCF5B0cd06C9479b0`](https://sepolia.etherscan.io/address/0xde2b5b73af47ba81d8aef7fbcf5b0cd06c9479b0)
+
+**Network Details:**
+- Chain ID: 11155111
+- RPC URL: Use your own Alchemy/Infura endpoint
+
 ## 🏗️ Project Structure
 
 ```
 ├── contracts/          # Smart contracts (Foundry/Solidity)
 ├── frontend/           # Web application (Next.js + TypeScript)
-├── docs/              # System design documentation
-└── TODO.md            # Project task breakdown
+└── docs/              # System design documentation
 ```
 
 ## 🛠️ Technology Stack
@@ -26,11 +36,12 @@ A full-stack decentralized prediction market platform built on EVM-compatible bl
 - **Web3:** wagmi + viem
 - **State:** TanStack Query
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js (v18+)
 - Foundry ([Installation](https://book.getfoundry.sh/getting-started/installation))
+- MetaMask or any Web3 wallet
 - Git
 
 ### Installation
@@ -49,13 +60,100 @@ forge install
 
 3. **Install frontend dependencies**
 ```bash
-cd ../frontend
+cd frontend
 npm install
 ```
 
-### Development
+## 🎮 Usage Guide
 
-#### Smart Contracts
+### Option 1: Use Sepolia Testnet (Recommended for Testing)
+
+The contracts are already deployed and verified on Ethereum Sepolia testnet!
+
+#### Step 1: Configure MetaMask
+Add Sepolia network to MetaMask:
+- **Network Name:** Ethereum Sepolia
+- **RPC URL:** `https://sepolia.infura.io/v3/YOUR_PROJECT_ID` (or your preferred provider)
+- **Chain ID:** `11155111`
+- **Currency Symbol:** ETH
+
+#### Step 2: Get Test ETH
+Get free Sepolia ETH from faucets:
+- 🚰 https://sepoliafaucet.com/
+- 🚰 https://www.alchemy.com/faucets/ethereum-sepolia
+
+#### Step 3: Start Frontend
+```bash
+cd frontend
+npm run dev
+```
+
+#### Step 4: Connect & Trade
+1. Open http://localhost:3000
+2. Connect your MetaMask wallet
+3. Make sure you're on Sepolia network
+4. Start creating markets or placing bets!
+
+**Contract Addresses (Sepolia):**
+- PMT Token: `0x9587900CdA35308bfC14ea41Ccd0C1947b159Ecb`
+- Factory: `0xDe2b5b73af47Ba81d8AeF7FBCF5B0cd06C9479b0`
+
+---
+
+### Option 2: Local Development with Anvil
+
+#### Step 1: Start Anvil (Local Ethereum Node)
+```bash
+cd contracts
+anvil
+```
+
+Keep this terminal running. Anvil will start on `http://127.0.0.1:8545`
+
+#### Step 2: Deploy Contracts (New Terminal)
+```bash
+cd contracts
+forge script script/Deploy.s.sol:DeployScript --rpc-url http://127.0.0.1:8545 --broadcast
+```
+
+#### Step 3: Configure MetaMask for Local Network
+Add custom network:
+- **Network Name:** Anvil Local
+- **RPC URL:** `http://127.0.0.1:8545`
+- **Chain ID:** `31337`
+- **Currency Symbol:** ETH
+
+Import Anvil's first account:
+- **Private Key:** `0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80`
+
+This account has 10,000 ETH pre-funded!
+
+#### Step 4: Mint Test Tokens
+```bash
+cd contracts
+cast send 0x5FbDB2315678afecb367f032d93F642f64180aa3 \
+  "mint(address,uint256)" \
+  YOUR_ADDRESS \
+  1000000000000000000000 \
+  --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+```
+
+#### Step 5: Start Frontend
+```bash
+cd frontend
+npm run dev
+```
+
+#### Step 6: Use the App
+1. Open http://localhost:3000
+2. Connect MetaMask (select Anvil Local network)
+3. Create markets and place bets!
+
+---
+
+## 🛠️ Development
+
+### Smart Contracts
 
 ```bash
 cd contracts
@@ -71,9 +169,15 @@ forge test --gas-report
 
 # Run tests with coverage
 forge coverage
+
+# Deploy to testnet
+forge script script/Deploy.s.sol:DeployScript --rpc-url $SEPOLIA_RPC_URL --broadcast --verify
+
+# Verify contracts
+forge verify-contract <CONTRACT_ADDRESS> src/SettlementToken.sol:SettlementToken --chain sepolia --etherscan-api-key $ETHERSCAN_API_KEY
 ```
 
-#### Frontend
+### Frontend
 
 ```bash
 cd frontend
@@ -86,74 +190,140 @@ npm run build
 
 # Start production server
 npm start
+
+# Type checking
+npm run type-check
+
+# Linting
+npm run lint
 ```
+
+## 🌍 Network Support
+
+The frontend **automatically detects your MetaMask network** and uses the correct contract addresses:
+
+- **Sepolia (Chain ID: 11155111)** → Uses Sepolia contracts
+- **Anvil Local (Chain ID: 31337)** → Uses local contracts
+
+Simply switch networks in MetaMask - no configuration needed!
 
 ## 📚 Documentation
 
 Detailed documentation can be found in the `/docs` folder:
-- System Architecture
-- Smart Contract Design
-- Liquidity Mechanism
-- Oracle Strategy
-- Deployment Guide
+- [System Design](./docs/SYSTEM_DESIGN.md) - Architecture and design decisions
+- [Oracle Integration](./docs/ORACLE_INTEGRATION.md) - Resolution mechanism
+- [Evaluation](./docs/EVALUATION.md) - Project assessment and trade-offs
 
 ## 🧪 Testing
 
 ### Smart Contracts
+All tests passing ✅ (49/49)
+
 ```bash
 cd contracts
+
+# Run all tests
+forge test
+
+# Run with verbose output
 forge test -vvv
+
+# Run specific test
+forge test --match-test testMarketCreation
+
+# Gas report
+forge test --gas-report
+
+# Coverage report
+forge coverage
 ```
 
-### Frontend
-```bash
-cd frontend
-npm run test
-```
+**Test Coverage:**
+- ✅ Token minting and transfers
+- ✅ Market creation and validation
+- ✅ Position buying with AMM pricing
+- ✅ Market resolution (all outcomes)
+- ✅ Winnings calculation and claims
+- ✅ Access control and security
+- ✅ Edge cases and error handling
 
 ## 🚢 Deployment
 
-### Testnet Deployment
+### Deployed Networks
 
-Contracts are deployed to:
-- **Base Sepolia:** [Coming Soon]
-- **Arbitrum Sepolia:** [Coming Soon]
+✅ **Ethereum Sepolia (Testnet)**
+- Deployed and verified on Etherscan
+- Ready for testing with faucet ETH
+- See contract addresses in [Live Deployment](#-live-deployment) section
 
-See [DEPLOYMENT.md](./docs/DEPLOYMENT.md) for detailed deployment instructions.
+### Deploy to Other Networks
+
+```bash
+cd contracts
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your private key and RPC URLs
+
+# Deploy to Sepolia
+forge script script/Deploy.s.sol:DeployScript \
+  --rpc-url $SEPOLIA_RPC_URL \
+  --broadcast \
+  --verify \
+  --etherscan-api-key $ETHERSCAN_API_KEY
+
+# Deploy to other networks (Base, Arbitrum, etc.)
+forge script script/Deploy.s.sol:DeployScript \
+  --rpc-url $YOUR_RPC_URL \
+  --broadcast
+```
 
 ## 🔑 Environment Variables
 
 ### Contracts (`contracts/.env`)
 ```env
-PRIVATE_KEY=your_private_key
-BASE_SEPOLIA_RPC_URL=your_base_sepolia_rpc
-ARBITRUM_SEPOLIA_RPC_URL=your_arbitrum_sepolia_rpc
-BASESCAN_API_KEY=your_basescan_key
-ARBISCAN_API_KEY=your_arbiscan_key
+PRIVATE_KEY=0xyour_private_key_here
+SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_PROJECT_ID
+ETHERSCAN_API_KEY=your_etherscan_api_key
 ```
 
-### Frontend (`frontend/.env.local`)
+### Frontend
+**No environment variables needed!** The frontend automatically:
+- Detects your MetaMask network (Sepolia or Local Anvil)
+- Loads correct contract addresses from `deployments.json`
+- Adapts UI based on connected network
+
+Optional override (advanced):
 ```env
-NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
-NEXT_PUBLIC_CHAIN_ID=84532
-NEXT_PUBLIC_MARKET_CONTRACT_ADDRESS=deployed_address
-NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS=deployed_address
+# frontend/.env.local
+NEXT_PUBLIC_CHAIN_ID=11155111
+NEXT_PUBLIC_SETTLEMENT_TOKEN_ADDRESS=0x...
+NEXT_PUBLIC_MARKET_FACTORY_ADDRESS=0x...
 ```
 
 ## 📋 Features
 
-### Implemented
-- ✅ Project structure and initialization
-- ✅ ERC-20 settlement token (SettlementToken contract)
-- ✅ Market creation contract (MarketFactory)
-- ✅ Position buying (betting with AMM pricing)
-- ✅ Market resolution (admin oracle)
-- ✅ Winnings claim (with UI)
-- ✅ Wallet connection UI (MetaMask support)
-- ✅ Betting interface (place bet flow)
-- ✅ Market creation UI
-- ✅ Comprehensive test suite (49/49 tests passing)
-- ⚠️ Local deployment only (Anvil)
+### Implemented ✅
+- ✅ **Smart Contracts**
+  - ERC-20 settlement token (SettlementToken with mint function)
+  - Market creation factory (MarketFactory with registry)
+  - AMM-based prediction markets (constant product formula)
+  - Market resolution system (resolver role)
+  - Comprehensive test suite (49/49 tests passing)
+  
+- ✅ **Frontend (Next.js 15)**
+  - Wallet connection (MetaMask integration via wagmi)
+  - Market creation interface with approval flow
+  - Betting interface (YES/NO positions)
+  - Real-time price display (AMM pricing)
+  - Market resolution & claim winnings UI
+  - Automatic network detection (Sepolia/Anvil)
+  
+- ✅ **Deployment & Verification**
+  - Ethereum Sepolia testnet deployment
+  - Etherscan contract verification
+  - Automated deployment scripts
+  - Multi-network support (local + testnet)
 
 ### Future Enhancements
 - **Advanced AMM:** Implement LMSR (Logarithmic Market Scoring Rule) for better price discovery
@@ -169,62 +339,41 @@ NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS=deployed_address
 
 ## ⚠️ Known Limitations
 
-### MVP Simplifications
-1. **Admin Oracle:** Resolution is centralized (resolver role). Production needs decentralized oracle.
-2. **Single Market Type:** Only binary (YES/NO) outcomes supported
-3. **Basic AMM:** Simplified constant product formula. LMSR would provide better liquidity
-4. **No Dispute Mechanism:** Resolution is final. Need challenge period in production
-5. **Limited Market Discovery:** No search, filtering, or categorization  
-6. **No Position Trading:** Cannot sell positions before market resolution
-7. **Fixed Initial Liquidity:** Cannot add/remove liquidity after creation
+### MVP Design Trade-offs
+1. **Admin Oracle:** Resolution is centralized (resolver role). Production requires decentralized oracle (Chainlink/UMA).
+2. **Single Market Type:** Only binary (YES/NO) outcomes supported. Future: multi-outcome markets.
+3. **Basic AMM:** Simplified constant product formula (x*y=k). LMSR would provide better liquidity and price discovery.
+4. **No Dispute Mechanism:** Resolution is final once set. Production needs challenge period and stake-based disputes.
+5. **Limited Market Discovery:** No search, filtering, or categorization. Future: tags, categories, and advanced filtering.
+6. **No Position Trading:** Cannot sell positions before market resolution. Future: secondary market for position trading.
+7. **Fixed Initial Liquidity:** Cannot add/remove liquidity after creation. Future: continuous liquidity provision.
 
 ### Known Issues
-- Market creation requires page refresh to see new market
-- No real-time price updates (need to refresh manually)
-- Mobile responsiveness not optimized
-- Transaction errors don't show detailed messages
+- Auto-refresh every 10 seconds for market list (can be improved with WebSocket)
+- Mobile UI not fully optimized (works but could be better)
+- No transaction history tracking (only current positions shown)
+- Limited error messages for failed transactions
 
-### Security Notes
-- ⚠️ **NOT AUDITED:** Do not use with real funds on mainnet
-- ⚠️ **Testnet/Local Only:** This is a demonstration/MVP implementation
-- ⚠️ **Centralized Elements:** Resolver role has significant control
+### Security Considerations
+- ⚠️ **NOT AUDITED:** This is a demonstration MVP - do not use with real funds on mainnet
+- ⚠️ **For Testing Only:** Use Sepolia testnet or local Anvil for experimentation
+- ⚠️ **Centralized Resolver:** Market creator has full resolution control (by design for MVP)
+- ✅ **Security Measures:** Reentrancy guards, access control, input validation, pausability
 
-## 🔐 Security Considerations
+## 🤝 Development Notes
 
-**Implemented Protections:**
-- ✅ Reentrancy guards on all state-changing functions
-- ✅ Role-based access control  
-- ✅ Input validation and sanitization
-- ✅ Pausability mechanism
-- ✅ Comprehensive test coverage (49/49 tests passing)
+This project was developed as an MVP demonstration of a decentralized prediction market, showcasing:
+- Smart contract development with Foundry
+- Web3 frontend integration with modern React patterns
+- Multi-network deployment and verification
+- Comprehensive testing and documentation
 
-## 🤝 AI Tools Used
-
-This project was developed with AI assistance to accelerate development and ensure best practices:
-
-### Claude Sonnet 4.5 (via Cursor)
-**Primary Use:** Architecture and implementation
-- **System Design:** Architectural decisions, trade-off analysis, AMM design, oracle strategy
-- **Smart Contracts:** Full implementation of SettlementToken, PredictionMarket, MarketFactory
-- **Testing:** Complete test suite design and implementation (49 tests)
-- **Frontend:** React components, Web3 integration (wagmi/viem), UI/UX implementation
-- **Documentation:** System design document, README, code comments
-- **Code Review:** Security analysis, gas optimization suggestions, best practices
-- **Problem Solving:** Debugging hydration errors, deployment scripts, contract integration
-
-### GitHub Copilot
-**Secondary Use:** Code completion and productivity
-- Boilerplate generation for standard patterns
-- Auto-completion of repetitive code
-- Solidity NatSpec comments
-- TypeScript type definitions
-
-### Development Approach
-- **Human-Led:** All architectural decisions and trade-off reasoning
-- **AI-Assisted:** Implementation speed and code quality
-- **Iterative:** Continuous refinement based on requirements and testing
-
-This approach allowed focusing on system design and architectural thinking while accelerating implementation.
+**Development Stack:**
+- Smart Contracts: Solidity + Foundry + OpenZeppelin
+- Frontend: Next.js 15 + TypeScript + Tailwind CSS
+- Web3 Integration: wagmi + viem
+- Testing: Forge test suite (49 tests)
+- Deployment: Ethereum Sepolia (verified)
 
 ## 📄 License
 

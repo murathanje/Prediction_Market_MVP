@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi'
 import { parseEther } from 'viem'
-import { CONTRACTS } from '@/lib/wagmi'
+import { getContractAddresses } from '@/lib/wagmi'
 import MarketFactoryABI from '@/lib/abi/MarketFactory.json'
 import SettlementTokenABI from '@/lib/abi/SettlementToken.json'
 
@@ -12,6 +12,9 @@ interface CreateMarketProps {
 }
 
 export function CreateMarket({ onSuccess }: CreateMarketProps) {
+  const chainId = useChainId()
+  const CONTRACTS = getContractAddresses(chainId)
+  
   const [question, setQuestion] = useState('')
   const [duration, setDuration] = useState('7')
   const [initialLiquidity, setInitialLiquidity] = useState('100')

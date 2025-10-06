@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi'
 import { parseEther, formatEther } from 'viem'
-import { CONTRACTS } from '@/lib/wagmi'
+import { getContractAddresses } from '@/lib/wagmi'
 import PredictionMarketABI from '@/lib/abi/PredictionMarket.json'
 import SettlementTokenABI from '@/lib/abi/SettlementToken.json'
 
@@ -12,6 +12,9 @@ interface MarketCardProps {
 }
 
 export function MarketCard({ marketAddress }: MarketCardProps) {
+  const chainId = useChainId()
+  const CONTRACTS = getContractAddresses(chainId)
+  
   const { address, isConnected } = useAccount()
   const [betAmount, setBetAmount] = useState('')
   const [selectedOutcome, setSelectedOutcome] = useState<'yes' | 'no'>('yes')

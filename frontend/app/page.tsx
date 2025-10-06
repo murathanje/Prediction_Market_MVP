@@ -4,12 +4,15 @@ import { useState } from 'react'
 import { ConnectWallet } from '@/components/ConnectWallet'
 import { MarketList } from '@/components/MarketList'
 import { CreateMarket } from '@/components/CreateMarket'
-import { CONTRACTS } from '@/lib/wagmi'
-import { useReadContract } from 'wagmi'
+import { getContractAddresses } from '@/lib/wagmi'
+import { useReadContract, useChainId } from 'wagmi'
 import MarketFactoryABI from '@/lib/abi/MarketFactory.json'
 import { MarketClaimCard } from '@/components/MarketClaimCard'
 
 export default function Home() {
+  const chainId = useChainId()
+  const CONTRACTS = getContractAddresses(chainId)
+  
   const [activeTab, setActiveTab] = useState<'markets' | 'create' | 'claim'>('markets')
   const [refreshKey, setRefreshKey] = useState(0)
 

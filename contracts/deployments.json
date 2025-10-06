@@ -8,7 +8,17 @@
       "TestMarket": "0xCafac3dD18aC6c6e92c921884f9E4176737C052c"
     },
     "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-    "deployedAt": "2025-10-05"
+    "deployedAt": "2025-10-06"
+  },
+  "ethereum_sepolia": {
+    "chainId": 11155111,
+    "rpcUrl": "https://eth-sepolia.g.alchemy.com/v2/55-JiuRMxbzz7gN1xpCx7KkV70bg9sGr",
+    "contracts": {
+      "SettlementToken": "0x9587900CdA35308bfC14ea41Ccd0C1947b159Ecb",
+      "MarketFactory": "0xDe2b5b73af47Ba81d8AeF7FBCF5B0cd06C9479b0"
+    },
+    "deployer": "0x538D8F0c878ff754cbc08D80DdAdF08BF7f6bEC7",
+    "deployedAt": "2025-10-06"
   },
   "base_sepolia": {
     "chainId": 84532,
