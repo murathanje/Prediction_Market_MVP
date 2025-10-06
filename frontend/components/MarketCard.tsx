@@ -21,27 +21,27 @@ export function MarketCard({ marketAddress }: MarketCardProps) {
     setMounted(true)
   }, [])
 
-  const { data: marketInfo } = useReadContract({
+  const { data: marketInfo, refetch: refetchMarketInfo } = useReadContract({
     address: marketAddress,
     abi: PredictionMarketABI,
     functionName: 'marketInfo',
   })
 
-  const { data: userPosition } = useReadContract({
+  const { data: userPosition, refetch: refetchUserPosition } = useReadContract({
     address: marketAddress,
     abi: PredictionMarketABI,
     functionName: 'getUserPosition',
     args: address ? [address] : undefined,
   })
 
-  const { data: yesPrice } = useReadContract({
+  const { data: yesPrice, refetch: refetchYesPrice } = useReadContract({
     address: marketAddress,
     abi: PredictionMarketABI,
     functionName: 'getPrice',
     args: [true],
   })
 
-  const { data: noPrice } = useReadContract({
+  const { data: noPrice, refetch: refetchNoPrice } = useReadContract({
     address: marketAddress,
     abi: PredictionMarketABI,
     functionName: 'getPrice',
@@ -51,8 +51,22 @@ export function MarketCard({ marketAddress }: MarketCardProps) {
   const { writeContract: approve, data: approveHash } = useWriteContract()
   const { writeContract: buyPosition, data: buyHash } = useWriteContract()
 
-  const { isLoading: isApproving } = useWaitForTransactionReceipt({ hash: approveHash })
-  const { isLoading: isBuying } = useWaitForTransactionReceipt({ hash: buyHash })
+  const { isLoading: isApproving, isSuccess: isApproveSuccess } = useWaitForTransactionReceipt({ hash: approveHash })
+  const { isLoading: isBuying, isSuccess: isBuySuccess } = useWaitForTransactionReceipt({ hash: buyHash })
+
+  // Refresh all market data when bet succeeds
+  useEffect(() => {
+    if (isBuySuccess) {
+      // Refetch all market data after successful bet
+      refetchMarketInfo()
+      refetchUserPosition()
+      refetchYesPrice()
+      refetchNoPrice()
+      
+      // Clear bet amount after successful bet
+      setBetAmount('')
+    }
+  }, [isBuySuccess, refetchMarketInfo, refetchUserPosition, refetchYesPrice, refetchNoPrice])
 
   if (!mounted) {
     return <div className="text-center py-8">Loading market...</div>
@@ -125,6 +139,33 @@ export function MarketCard({ marketAddress }: MarketCardProps) {
 
       {isConnected && status === 0 ? (
         <div className="space-y-4">
+          {isApproveSuccess && !isBuySuccess && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center gap-2 animate-fade-in">
+              <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-sm font-medium text-green-800">
+                ✓ Approved! Now place your bet →
+              </span>
+            </div>
+          )}
+
+          {isBuySuccess && (
+            <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-4 animate-fade-in">
+              <div className="flex items-center gap-2 mb-2">
+                <svg className="w-6 h-6 text-blue-600 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-base font-bold text-blue-900">
+                  🎉 Bet Placed Successfully!
+                </span>
+              </div>
+              <p className="text-sm text-blue-800">
+                Your position and market prices have been updated below.
+              </p>
+            </div>
+          )}
+
           <div className="flex gap-2">
             <button
               onClick={() => setSelectedOutcome('yes')}
@@ -162,21 +203,50 @@ export function MarketCard({ marketAddress }: MarketCardProps) {
             <button
               onClick={handleApprove}
               disabled={isApproving || !betAmount}
-              className="flex-1 px-6 py-3 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition font-semibold"
+              className={`flex-1 px-6 py-3 rounded-lg transition font-semibold ${
+                isApproveSuccess 
+                  ? 'bg-green-600 text-white cursor-default'
+                  : 'bg-yellow-500 text-white hover:bg-yellow-600 disabled:bg-gray-300 disabled:cursor-not-allowed'
+              }`}
             >
-              {isApproving ? 'Approving...' : '1. Approve'}
+              {isApproving ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Approving...
+                </span>
+              ) : isApproveSuccess ? (
+                '✓ Approved'
+              ) : (
+                '1. Approve'
+              )}
             </button>
             <button
               onClick={handleBet}
               disabled={isBuying || !betAmount}
               className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition font-semibold"
             >
-              {isBuying ? 'Betting...' : '2. Place Bet'}
+              {isBuying ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Betting...
+                </span>
+              ) : (
+                '2. Place Bet'
+              )}
             </button>
           </div>
 
           <div className="text-xs text-gray-500 text-center">
-            Step 1: Approve tokens • Step 2: Place your bet
+            {!isApproveSuccess 
+              ? 'Step 1: Approve tokens • Step 2: Place your bet'
+              : '✓ Approved! Now place your bet →'
+            }
           </div>
         </div>
       ) : !isConnected ? (
