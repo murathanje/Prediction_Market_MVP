@@ -3,13 +3,29 @@
 import { useState } from 'react'
 import { ConnectWallet } from '@/components/ConnectWallet'
 import { MarketList } from '@/components/MarketList'
-import { ClaimWinnings } from '@/components/ClaimWinnings'
 import { CreateMarket } from '@/components/CreateMarket'
 import { CONTRACTS } from '@/lib/wagmi'
+import { useReadContract } from 'wagmi'
+import MarketFactoryABI from '@/lib/abi/MarketFactory.json'
+import { MarketClaimCard } from '@/components/MarketClaimCard'
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'markets' | 'create' | 'claim'>('markets')
   const [refreshKey, setRefreshKey] = useState(0)
+
+  // Get all markets for claim page
+  const { data: marketCount } = useReadContract({
+    address: CONTRACTS.MarketFactory,
+    abi: MarketFactoryABI,
+    functionName: 'getMarketsCount',
+  })
+
+  const { data: allMarkets } = useReadContract({
+    address: CONTRACTS.MarketFactory,
+    abi: MarketFactoryABI,
+    functionName: 'getMarketsPaginated',
+    args: [0n, marketCount || 10n],
+  })
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -87,10 +103,10 @@ export default function Home() {
           {activeTab === 'claim' && (
             <>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Claim Your Winnings
+                Resolve & Claim
               </h2>
               <p className="text-gray-600">
-                Withdraw your earnings from resolved markets
+                Resolve your markets and claim winnings from positions
               </p>
             </>
           )}
@@ -109,7 +125,25 @@ export default function Home() {
             />
           )}
           {activeTab === 'claim' && (
-            <MarketList key={`claim-${refreshKey}`} />
+            <div className="space-y-6">
+              {allMarkets && (allMarkets as `0x${string}`[]).length > 0 ? (
+                (allMarkets as `0x${string}`[]).map((marketAddress) => (
+                  <MarketClaimCard key={marketAddress} marketAddress={marketAddress} />
+                ))
+              ) : (
+                <div className="bg-white rounded-xl shadow-lg p-12 text-center">
+                  <svg className="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                  </svg>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    No Markets Yet
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    Create a market or place bets to see them here
+                  </p>
+                </div>
+              )}
+            </div>
           )}
         </div>
 
