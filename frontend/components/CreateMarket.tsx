@@ -7,7 +7,11 @@ import { CONTRACTS } from '@/lib/wagmi'
 import MarketFactoryABI from '@/lib/abi/MarketFactory.json'
 import SettlementTokenABI from '@/lib/abi/SettlementToken.json'
 
-export function CreateMarket() {
+interface CreateMarketProps {
+  onSuccess?: () => void
+}
+
+export function CreateMarket({ onSuccess }: CreateMarketProps) {
   const [question, setQuestion] = useState('')
   const [duration, setDuration] = useState('7')
   const [initialLiquidity, setInitialLiquidity] = useState('100')
@@ -49,8 +53,13 @@ export function CreateMarket() {
       } else {
         setNewMarketAddress('success')
       }
+      
+      // Call onSuccess callback after short delay
+      setTimeout(() => {
+        onSuccess?.()
+      }, 3000) // Give user time to see the success message
     }
-  }, [isCreateSuccess, createReceipt, newMarketAddress])
+  }, [isCreateSuccess, createReceipt, newMarketAddress, onSuccess])
 
   const handleApprove = () => {
     if (!initialLiquidity) return

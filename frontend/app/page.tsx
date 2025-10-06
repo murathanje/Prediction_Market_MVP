@@ -2,13 +2,14 @@
 
 import { useState } from 'react'
 import { ConnectWallet } from '@/components/ConnectWallet'
-import { MarketCard } from '@/components/MarketCard'
+import { MarketList } from '@/components/MarketList'
 import { ClaimWinnings } from '@/components/ClaimWinnings'
 import { CreateMarket } from '@/components/CreateMarket'
 import { CONTRACTS } from '@/lib/wagmi'
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'markets' | 'create' | 'claim'>('markets')
+  const [refreshKey, setRefreshKey] = useState(0)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -69,7 +70,7 @@ export default function Home() {
                 Active Markets
               </h2>
               <p className="text-gray-600">
-                Place your bets on Bitcoin's future price
+                All prediction markets - place your bets!
               </p>
             </>
           )}
@@ -96,14 +97,19 @@ export default function Home() {
         </div>
 
         <div className="space-y-6">
-          {activeTab === 'markets' && CONTRACTS.TestMarket && (
-            <MarketCard marketAddress={CONTRACTS.TestMarket} />
+          {activeTab === 'markets' && (
+            <MarketList key={refreshKey} />
           )}
           {activeTab === 'create' && (
-            <CreateMarket />
+            <CreateMarket 
+              onSuccess={() => {
+                setRefreshKey(prev => prev + 1)
+                setActiveTab('markets')
+              }}
+            />
           )}
-          {activeTab === 'claim' && CONTRACTS.TestMarket && (
-            <ClaimWinnings marketAddress={CONTRACTS.TestMarket} />
+          {activeTab === 'claim' && (
+            <MarketList key={`claim-${refreshKey}`} />
           )}
         </div>
 
@@ -147,7 +153,7 @@ export default function Home() {
                   Run: <code className="bg-gray-100 px-2 py-1 rounded">cast send {CONTRACTS.SettlementToken} "mint(address,uint256)" YOUR_ADDRESS 1000000000000000000000 --private-key 0xac09...</code>
                 </span>
               </div>
-            </li>
+          </li>
             <li className="flex gap-3">
               <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
                 4
@@ -159,8 +165,8 @@ export default function Home() {
                   Approve tokens → Choose YES or NO → Enter amount → Place bet
                 </span>
               </div>
-            </li>
-          </ol>
+          </li>
+        </ol>
         </div>
 
         <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
