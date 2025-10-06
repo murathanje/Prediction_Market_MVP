@@ -1,10 +1,15 @@
 'use client'
 
+import { useState } from 'react'
 import { ConnectWallet } from '@/components/ConnectWallet'
 import { MarketCard } from '@/components/MarketCard'
+import { ClaimWinnings } from '@/components/ClaimWinnings'
+import { CreateMarket } from '@/components/CreateMarket'
 import { CONTRACTS } from '@/lib/wagmi'
 
 export default function Home() {
+  const [activeTab, setActiveTab] = useState<'markets' | 'create' | 'claim'>('markets')
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <header className="bg-white shadow-sm">
@@ -25,17 +30,80 @@ export default function Home() {
 
       <main className="container mx-auto px-4 py-12">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Active Markets
-          </h2>
-          <p className="text-gray-600">
-            Place your bets on Bitcoin's future price
-          </p>
+          <div className="flex gap-2 mb-6">
+            <button
+              onClick={() => setActiveTab('markets')}
+              className={`px-6 py-3 rounded-lg font-semibold transition ${
+                activeTab === 'markets'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              📊 Active Markets
+            </button>
+            <button
+              onClick={() => setActiveTab('create')}
+              className={`px-6 py-3 rounded-lg font-semibold transition ${
+                activeTab === 'create'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              ✨ Create Market
+            </button>
+            <button
+              onClick={() => setActiveTab('claim')}
+              className={`px-6 py-3 rounded-lg font-semibold transition ${
+                activeTab === 'claim'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              💰 Claim Winnings
+            </button>
+          </div>
+
+          {activeTab === 'markets' && (
+            <>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Active Markets
+              </h2>
+              <p className="text-gray-600">
+                Place your bets on Bitcoin's future price
+              </p>
+            </>
+          )}
+          {activeTab === 'create' && (
+            <>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Create New Market
+              </h2>
+              <p className="text-gray-600">
+                Start a new prediction market for others to participate
+              </p>
+            </>
+          )}
+          {activeTab === 'claim' && (
+            <>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Claim Your Winnings
+              </h2>
+              <p className="text-gray-600">
+                Withdraw your earnings from resolved markets
+              </p>
+            </>
+          )}
         </div>
 
         <div className="space-y-6">
-          {CONTRACTS.TestMarket && (
+          {activeTab === 'markets' && CONTRACTS.TestMarket && (
             <MarketCard marketAddress={CONTRACTS.TestMarket} />
+          )}
+          {activeTab === 'create' && (
+            <CreateMarket />
+          )}
+          {activeTab === 'claim' && CONTRACTS.TestMarket && (
+            <ClaimWinnings marketAddress={CONTRACTS.TestMarket} />
           )}
         </div>
 

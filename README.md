@@ -144,36 +144,87 @@ NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS=deployed_address
 
 ### Implemented
 - ✅ Project structure and initialization
-- [ ] ERC-20 settlement token
-- [ ] Market creation contract
-- [ ] Position buying (betting)
-- [ ] Market resolution
-- [ ] Winnings claim
-- [ ] Wallet connection UI
-- [ ] Betting interface
-- [ ] Testnet deployment
+- ✅ ERC-20 settlement token (SettlementToken contract)
+- ✅ Market creation contract (MarketFactory)
+- ✅ Position buying (betting with AMM pricing)
+- ✅ Market resolution (admin oracle)
+- ✅ Winnings claim (with UI)
+- ✅ Wallet connection UI (MetaMask support)
+- ✅ Betting interface (place bet flow)
+- ✅ Market creation UI
+- ✅ Comprehensive test suite (49/49 tests passing)
+- ⚠️ Local deployment only (Anvil)
 
 ### Future Enhancements
-- Advanced liquidity mechanisms (AMM)
-- Decentralized oracle integration (Chainlink/UMA)
-- Market creation UI
-- Real-time market updates
-- Mobile responsive design
-- Advanced analytics dashboard
+- **Advanced AMM:** Implement LMSR (Logarithmic Market Scoring Rule) for better price discovery
+- **Decentralized Oracles:** Integrate Chainlink Any API + UMA Optimistic Oracle with dispute mechanism
+- **Multiple Outcomes:** Support more than binary (YES/NO) markets (3+ outcomes)
+- **Conditional Markets:** Enable dependent markets (e.g., "If A happens, will B happen?")
+- **Liquidity Mining:** Incentivize liquidity providers with rewards
+- **Real-time Updates:** WebSocket integration for live price feeds
+- **Mobile App:** React Native implementation
+- **Advanced Analytics:** Historical data, profit/loss tracking, market statistics
+- **Social Features:** Comments, market discussions, reputation system
+- **Governance:** DAO for platform parameters and dispute resolution
+
+## ⚠️ Known Limitations
+
+### MVP Simplifications
+1. **Admin Oracle:** Resolution is centralized (resolver role). Production needs decentralized oracle.
+2. **Single Market Type:** Only binary (YES/NO) outcomes supported
+3. **Basic AMM:** Simplified constant product formula. LMSR would provide better liquidity
+4. **No Dispute Mechanism:** Resolution is final. Need challenge period in production
+5. **Limited Market Discovery:** No search, filtering, or categorization  
+6. **No Position Trading:** Cannot sell positions before market resolution
+7. **Fixed Initial Liquidity:** Cannot add/remove liquidity after creation
+
+### Known Issues
+- Market creation requires page refresh to see new market
+- No real-time price updates (need to refresh manually)
+- Mobile responsiveness not optimized
+- Transaction errors don't show detailed messages
+
+### Security Notes
+- ⚠️ **NOT AUDITED:** Do not use with real funds on mainnet
+- ⚠️ **Testnet/Local Only:** This is a demonstration/MVP implementation
+- ⚠️ **Centralized Elements:** Resolver role has significant control
 
 ## 🔐 Security Considerations
 
-- Reentrancy guards on all state-changing functions
-- Role-based access control
-- Input validation and sanitization
-- Pausability mechanism
-- Comprehensive test coverage
+**Implemented Protections:**
+- ✅ Reentrancy guards on all state-changing functions
+- ✅ Role-based access control  
+- ✅ Input validation and sanitization
+- ✅ Pausability mechanism
+- ✅ Comprehensive test coverage (49/49 tests passing)
 
 ## 🤝 AI Tools Used
 
-This project was developed with the assistance of:
-- **Claude Sonnet 4.5** (via Cursor): Architecture design, smart contract implementation, code review
-- **GitHub Copilot**: Code completion and boilerplate generation
+This project was developed with AI assistance to accelerate development and ensure best practices:
+
+### Claude Sonnet 4.5 (via Cursor)
+**Primary Use:** Architecture and implementation
+- **System Design:** Architectural decisions, trade-off analysis, AMM design, oracle strategy
+- **Smart Contracts:** Full implementation of SettlementToken, PredictionMarket, MarketFactory
+- **Testing:** Complete test suite design and implementation (49 tests)
+- **Frontend:** React components, Web3 integration (wagmi/viem), UI/UX implementation
+- **Documentation:** System design document, README, code comments
+- **Code Review:** Security analysis, gas optimization suggestions, best practices
+- **Problem Solving:** Debugging hydration errors, deployment scripts, contract integration
+
+### GitHub Copilot
+**Secondary Use:** Code completion and productivity
+- Boilerplate generation for standard patterns
+- Auto-completion of repetitive code
+- Solidity NatSpec comments
+- TypeScript type definitions
+
+### Development Approach
+- **Human-Led:** All architectural decisions and trade-off reasoning
+- **AI-Assisted:** Implementation speed and code quality
+- **Iterative:** Continuous refinement based on requirements and testing
+
+This approach allowed focusing on system design and architectural thinking while accelerating implementation.
 
 ## 📄 License
 
